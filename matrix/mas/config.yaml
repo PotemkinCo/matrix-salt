@@ -1,0 +1,47 @@
+# Matrix Authentication Service base configuration. The tracked secrets.json.j2 supplies the
+# database and Matrix connection maps, rendered with credentials from private Pillar.
+
+http:
+  listeners:
+    - name: web
+      resources:
+        # discovery and oauth are required by Synapse's MatrixAuthenticationService endpoint;
+        # human, assets and graphql serve the account/login SPA behind HAProxy on the public host.
+        - name: discovery
+        - name: human
+        - name: oauth
+        - name: compat
+        - name: graphql
+        - name: assets
+      binds:
+        - address: '0.0.0.0:8082'
+      proxy_protocol: false
+
+  # HAProxy overwrites X-Forwarded-For with the peer address, so the client address can be trusted
+  # when the request arrives from the pod-facing proxy address. MAS's admin REST API
+  # (/api/admin/v1/) and the pod-only internal listener are deliberately not enabled; administer the
+  # deployment with mas-cli inside the container.
+  trusted_proxies: ["127.0.0.1/32", "::1/128"]
+
+passwords:
+  enabled: true
+
+account:
+  password_registration_enabled: true
+  password_registration_token_required: true
+  password_registration_email_required: false
+  password_change_allowed: true
+  password_recovery_enabled: false
+  account_deactivation_allowed: true
+  login_with_email_allowed: false
+  email_change_allowed: true
+  displayname_change_allowed: true
+
+email:
+  transport: blackhole
+
+policy:
+  wasm_module: /usr/local/share/mas-cli/policy.wasm
+
+branding:
+  service_name: 'Matrix'

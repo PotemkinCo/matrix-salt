@@ -1,0 +1,41 @@
+[Unit]
+Description=Standard Synapse homeserver
+Requires=salt-postgres.service
+Requires=salt-mas.service
+After=salt-postgres.service salt-mas.service
+
+[Container]
+ContainerName=salt-synapse
+Image={{ image }}
+Pod=salt.pod
+StartWithPod=false
+PodmanArgs=--security-opt=no-new-privileges
+PodmanArgs=--sdnotify=healthy
+Pull=missing
+User=991:991
+ReadOnly=true
+DropCapability=ALL
+Tmpfs=/tmp:rw,mode=1777
+Environment=SYNAPSE_CONFIG_PATH=/data/homeserver.yaml
+Volume=salt-synapse-data:/data:rw,U
+Volume=/home/ubuntu/salt_config/current/matrix/synapse/homeserver.yaml:/data/homeserver.yaml:ro
+Volume=${SALT_DATA_DIR}/runtime/synapse.runtime.yaml:/data/synapse.runtime.yaml:ro
+Volume=${SALT_DATA_DIR}/runtime/synapse.log.config:/data/log.config:ro
+Volume=${SALT_DATA_DIR}/secrets/synapse.secrets.json:/data/secrets.json:ro
+Volume=${SALT_DATA_DIR}/secrets/synapse_signing.key:/data/signing.key:ro
+Volume=${SALT_DATA_DIR}/secrets/lk-jwt.appservice.yaml:/data/lk-jwt.appservice.yaml:ro
+Exec=run --config-path=/data/homeserver.yaml --config-path=/data/secrets.json --config-path=/data/synapse.runtime.yaml
+HealthCmd=["python","-c","import urllib.request; urllib.request.urlopen('http://127.0.0.1:8008/_matrix/client/versions')"]
+HealthInterval=15s
+HealthTimeout=5s
+HealthRetries=3
+HealthStartPeriod=30s
+
+[Service]
+TimeoutStartSec=900
+EnvironmentFile=/home/ubuntu/salt_config/salt-deployment.env
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

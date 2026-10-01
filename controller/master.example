@@ -1,0 +1,23 @@
+# Copy outside the checkout as <controller>/master; replace all absolute paths.
+file_roots:
+  base:
+    - /ABSOLUTE/PATH/matrix-salt
+    - /ABSOLUTE/PATH/private-pillar
+pillar_roots:
+  base:
+    - /ABSOLUTE/PATH/matrix-salt/pillar
+    - /ABSOLUTE/PATH/private-pillar
+roster: sshconfig
+# Use the same standard ~/.ssh/config that OpenSSH itself reads.
+ssh_config_file: /ABSOLUTE/HOME/.ssh/config
+ssh_sudo: true
+ssh_options:
+  - BatchMode=yes
+  - StrictHostKeyChecking=yes
+ssh_timeout: 30
+pki_dir: /ABSOLUTE/PATH/controller-runtime/pki
+cachedir: /ABSOLUTE/PATH/controller-runtime/cache
+extension_modules: /ABSOLUTE/PATH/controller-runtime/extmods
+sock_dir: /ABSOLUTE/PATH/controller-runtime/run
+log_file: /ABSOLUTE/PATH/controller-runtime/master.log
+ssh_log_file: /ABSOLUTE/PATH/controller-runtime/ssh.log

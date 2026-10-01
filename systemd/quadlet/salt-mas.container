@@ -1,0 +1,37 @@
+[Unit]
+Description=Matrix Authentication Service
+Requires=salt-postgres.service
+After=salt-postgres.service
+
+[Container]
+ContainerName=salt-mas
+Image={{ image }}
+Pod=salt.pod
+StartWithPod=false
+PodmanArgs=--security-opt=no-new-privileges
+PodmanArgs=--env-file=${SALT_DATA_DIR}/runtime/mas.environment
+PodmanArgs=--sdnotify=healthy
+Pull=missing
+User=991:991
+ReadOnly=true
+DropCapability=ALL
+Tmpfs=/tmp:rw,mode=1777
+Volume=/home/ubuntu/salt_config/current/matrix/mas/config.yaml:/config.yaml:ro
+Volume=${SALT_DATA_DIR}/runtime/mas.runtime.yaml:/mas-runtime.yaml:ro
+Volume=${SALT_DATA_DIR}/secrets/mas.secrets.json:/secrets.json:ro
+Volume=${SALT_DATA_DIR}/secrets/mas_signing.key:/mas-signing.key:ro
+Exec=server --config=/config.yaml --config=/secrets.json --config=/mas-runtime.yaml
+HealthCmd=["/usr/local/bin/mas-cli","config","check","--config=/config.yaml","--config=/secrets.json","--config=/mas-runtime.yaml"]
+HealthInterval=15s
+HealthTimeout=5s
+HealthRetries=5
+HealthStartPeriod=30s
+
+[Service]
+TimeoutStartSec=900
+EnvironmentFile=/home/ubuntu/salt_config/salt-deployment.env
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

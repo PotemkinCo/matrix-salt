@@ -1,0 +1,38 @@
+[Unit]
+Description=LiveKit MatrixRTC JWT service
+Requires=salt-synapse.service
+After=salt-synapse.service
+
+[Container]
+ContainerName=salt-lk-jwt
+Image={{ image }}
+Pod=salt.pod
+StartWithPod=false
+PodmanArgs=--security-opt=no-new-privileges
+PodmanArgs=--env-file=${SALT_DATA_DIR}/secrets/lk-jwt.secrets.env
+PodmanArgs=--sdnotify=healthy
+Pull=missing
+User=991:991
+ReadOnly=true
+DropCapability=ALL
+Environment=LIVEKIT_URL={{ pillar["matrix"]["livekit"]["sfu_url"] }}
+Environment=LIVEKIT_JWT_BIND=0.0.0.0:9013
+Environment=LIVEKIT_FULL_ACCESS_HOMESERVERS=${SERVER_NAME}
+Environment=LIVEKIT_AS_REGISTRATION_FILE=/etc/lk-jwt-service/lk-jwt.appservice.yaml
+Environment=LIVEKIT_HS_SERVER_NAME=${SERVER_NAME}
+Environment=LIVEKIT_CS_API_URL_OVERRIDES=${SERVER_NAME}=http://127.0.0.1:8008
+Volume=${SALT_DATA_DIR}/secrets/lk-jwt.appservice.yaml:/etc/lk-jwt-service/lk-jwt.appservice.yaml:ro
+HealthCmd=["/lk-jwt-service-healthcheck",""]
+HealthInterval=30s
+HealthTimeout=5s
+HealthRetries=3
+HealthStartPeriod=15s
+
+[Service]
+TimeoutStartSec=900
+EnvironmentFile=/home/ubuntu/salt_config/salt-deployment.env
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target

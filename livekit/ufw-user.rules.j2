@@ -1,0 +1,17 @@
+# Managed by Salt. The complete user policy is declared in livekit/firewall.sls.
+*filter
+:ufw-user-input - [0:0]
+:ufw-user-output - [0:0]
+:ufw-user-forward - [0:0]
+:ufw-user-limit - [0:0]
+:ufw-user-limit-accept - [0:0]
+### RULES ###
+{% for port in backend_ports %}
+### tuple ### deny tcp {{ port }} {{ network }} any {{ network }} in
+-A ufw-user-input -p tcp --dport {{ port }} -j DROP
+{% endfor %}
+### END RULES ###
+-A ufw-user-limit -m limit --limit 3/minute -j LOG --log-prefix "[UFW LIMIT BLOCK] "
+-A ufw-user-limit -j REJECT
+-A ufw-user-limit-accept -j ACCEPT
+COMMIT

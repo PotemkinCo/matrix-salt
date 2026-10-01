@@ -1,0 +1,2 @@
+[Volume]
+VolumeName={{ pillar["livekit"]["redis_volume"] }}

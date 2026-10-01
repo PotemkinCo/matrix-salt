@@ -1,0 +1,49 @@
+# Standard Synapse base configuration. The tracked secrets.json.j2 is rendered with private
+# Salt Pillar inputs; public identity and rate limits are rendered by synapse.runtime.yaml.
+
+pid_file: /data/homeserver.pid
+log_config: /data/log.config
+signing_key_path: /data/signing.key
+
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    bind_addresses: ['0.0.0.0']
+    resources:
+      - names: [client, openid]
+        compress: false
+
+# The LiveKit JWT service is registered as a Matrix application service. The registration file is
+# private because it contains the application-service authentication tokens.
+app_service_config_files:
+  - /data/lk-jwt.appservice.yaml
+
+# PostgreSQL, MAS integration, macaroons, and form secrets are complete top-level maps in the
+# private JSON overlay. Synapse config merging is shallow, so do not add partial replacements here.
+
+media_store_path: /data/media_store
+enable_local_media_storage: true
+max_upload_size: 128M
+dynamic_thumbnails: false
+thumbnail_sizes: []
+url_preview_enabled: false
+
+# Federation is disabled: no remote homeserver is allowed, and this listener serves no federation
+# resource. An empty list is an explicit deny-all whitelist; omitting it allows every domain.
+federation_domain_whitelist: []
+
+# No remote signing-key server is needed when federation is disabled.
+trusted_key_servers: []
+
+# Authentication is delegated to MAS.
+enable_registration: false
+password_config:
+  enabled: false
+  localdb_enabled: false
+
+report_stats: false
+max_event_delay_duration: 24h
+
+# vim:ft=yaml

@@ -1,0 +1,15 @@
+id: lk-jwt-service
+as_token: {{ pillar["matrix"]["credentials"]["as_token"] | tojson }}
+hs_token: {{ pillar["matrix"]["credentials"]["hs_token"] | tojson }}
+sender_localpart: _lk_jwt_service
+namespaces:
+  users:
+  - exclusive: false
+    regex: .*
+url: null
+scopes:
+- urn:matrix:client:rooms:is_joined
+io.element.msc4502.scope:
+- urn:matrix:client:io.element.msc4502:rooms:is_joined
+proxy_prefix: rtc/livekit
+proxy_url: http://127.0.0.1:9013

@@ -1,0 +1,15 @@
+{
+  "salt_controller": "3008.2",
+  "acme_sh": "3.1.6",
+  "haproxy_series": "3.2",
+  "podman": "100:6.1.2-1",
+  "passt": "100:0.0+20260925.df90211d-1",
+  "images": {
+    "synapse": "ghcr.io/element-hq/synapse:v1.161.0",
+    "mas": "ghcr.io/element-hq/matrix-authentication-service:1.25.1",
+    "lk_jwt": "ghcr.io/element-hq/lk-jwt-service:0.7.0",
+    "postgres": "docker.io/library/postgres:16-alpine",
+    "livekit": "docker.io/livekit/livekit-server:v1.13.7",
+    "redis": "docker.io/library/redis:8.10.1-alpine3.23"
+  }
+}

@@ -1,0 +1,18 @@
+{% set vars = pillar["matrix"] %}
+{% set server = vars["server"] %}
+{% set mas = vars["mas"] %}
+
+rate_limiting:
+  login:
+    per_ip:
+      burst: {{ mas["login_per_ip_burst"] }}
+      per_second: {{ mas["login_per_ip_per_second"] }}
+    per_account:
+      burst: {{ mas["login_per_account_burst"] }}
+      per_second: {{ mas["login_per_account_per_second"] }}
+  registration:
+    burst: {{ mas["registration_burst"] }}
+    per_second: {{ mas["registration_per_second"] }}
+
+http:
+  public_base: https://{{ server["name"] }}/

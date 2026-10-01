@@ -1,0 +1,32 @@
+[Unit]
+Description=PostgreSQL for Synapse and MAS
+
+[Container]
+ContainerName=salt-postgres
+Image={{ image }}
+Pod=salt.pod
+StartWithPod=false
+PodmanArgs=--security-opt=no-new-privileges
+EnvironmentFile=/home/ubuntu/salt_config/secrets/postgres.secrets.env
+EnvironmentFile=/home/ubuntu/salt_config/secrets/synapse-db.secrets.env
+EnvironmentFile=/home/ubuntu/salt_config/secrets/mas-db.secrets.env
+PodmanArgs=--sdnotify=healthy
+Pull=missing
+Volume=salt-postgres-data:/var/lib/postgresql/data:rw
+Volume=/home/ubuntu/salt_config/current/postgres/init-databases.sql:/docker-entrypoint-initdb.d/10-init-databases.sql:ro
+Volume=/home/ubuntu/salt_config/postgres-socket:/run/salt-postgres:rw
+Exec=postgres -c unix_socket_directories=/var/run/postgresql,/run/salt-postgres
+HealthCmd=["pg_isready","--username=postgres","--dbname=postgres"]
+HealthInterval=10s
+HealthTimeout=5s
+HealthRetries=5
+HealthStartPeriod=10s
+
+[Service]
+TimeoutStartSec=900
+EnvironmentFile=/home/ubuntu/salt_config/salt-deployment.env
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=default.target
