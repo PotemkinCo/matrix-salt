@@ -47,7 +47,7 @@ frontend matrix_https
     http-request return status 404 if synapse_federation_path !{ path -i /_matrix/federation/v1/openid/userinfo }
     http-request return status 404 if { path -i /_matrix/federation/v1/openid/userinfo } !{ method GET }
     acl mas_compat path_reg ^/_matrix/client/[^/]+/(login|logout|refresh)/?$
-    acl synapse_path path_beg /_matrix/
+    acl synapse_path path_beg /_matrix/ /_synapse/client/rendezvous/
     acl jwt_path path -i /sfu/get /get_token /delegate_delayed_leave /sfu_webhook
     acl mas_path path -i /login /logout /register /account /authorize /link /recover /.well-known/openid-configuration /.well-known/webfinger /.well-known/change-password
     # /graphql and /assets/ serve the MAS account/login SPA and must stay public; the MAS admin
